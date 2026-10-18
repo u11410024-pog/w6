@@ -1,0 +1,761 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<!-- 載入 MathJax 3 渲染引擎 -->
+<script>
+  window.MathJax = {
+    tex: {
+      inlineMath: [['$', '$'], ['\\(', '\\)']],
+      displayMath: [['$$', '$$'], ['\\[', '\\]']]
+    },
+    svg: {
+      fontCache: 'global'
+    }
+  };
+</script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>折射震測實驗心得報告 - 地生二 林恩羽</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chart.js for Travel Time Plot -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- MathJax for TeX equations -->
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        body {
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Microsoft JhengHei', sans-serif;
+            background-color: #0f172a;
+            color: #f8fafc;
+        }
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0f172a;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #334155;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #475569;
+        }
+        .glass-card {
+            background: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        .gradient-text {
+            background: linear-gradient(135deg, #38bdf8 0%, #fb923c 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .tab-btn.active {
+            background-color: #0284c7;
+            color: white;
+            border-color: #0369a1;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between">
+
+    <!-- Header Navigation -->
+    <header class="sticky top-0 z-50 glass-card border-b border-slate-700/50 shadow-lg">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <div class="p-2 bg-amber-500/20 text-amber-400 rounded-lg">
+                    <i class="fa-solid fa-wave-square text-xl"></i>
+                </div>
+                <div>
+                    <h1 class="text-lg font-bold gradient-text">折射震測實驗心得報告</h1>
+                    <p class="text-xs text-slate-400">Refraction Seismic Experiment Report</p>
+                </div>
+            </div>
+            <div class="flex items-center space-x-4 text-sm">
+                <span class="bg-sky-500/10 text-sky-400 px-3 py-1 rounded-full border border-sky-500/30 font-medium">
+                    <i class="fa-solid fa-user-graduate mr-1"></i> 地生二 林恩羽
+                </span>
+                <span class="bg-amber-500/10 text-amber-400 px-3 py-1 rounded-full border border-amber-500/30 font-mono">
+                    u11410024
+                </span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full space-y-8 flex-grow">
+
+        <!-- Navigation Tabs -->
+        <div class="flex flex-wrap gap-2 border-b border-slate-700 pb-3">
+            <button onclick="switchTab('overview')" id="tab-overview" class="tab-btn active px-4 py-2 rounded-lg text-sm font-medium transition flex items-center gap-2 bg-slate-800 hover:bg-slate-700 text-slate-300">
+                <i class="fa-solid fa-sliders"></i> 儀器對比與重點
+            </button>
+            <button onclick="switchTab('simulator')" id="tab-simulator" class="tab-btn px-4 py-2 rounded-lg text-sm font-medium transition flex items-center gap-2 bg-slate-800 hover:bg-slate-700 text-slate-300">
+                <i class="fa-solid fa-chart-line"></i> 互動走時曲線模擬
+            </button>
+            <button onclick="switchTab('wavepaths')" id="tab-wavepaths" class="tab-btn px-4 py-2 rounded-lg text-sm font-medium transition flex items-center gap-2 bg-slate-800 hover:bg-slate-700 text-slate-300">
+                <i class="fa-solid fa-route"></i> 波形傳播動態模擬
+            </button>
+            <button onclick="switchTab('reflection')" id="tab-reflection" class="tab-btn px-4 py-2 rounded-lg text-sm font-medium transition flex items-center gap-2 bg-slate-800 hover:bg-slate-700 text-slate-300">
+                <i class="fa-solid fa-heart-pulse"></i> 實驗心得與 AI 歷程
+            </button>
+        </div>
+
+        <!-- TAB 1: 儀器介紹 & 四大物理重點 -->
+        <section id="sec-overview" class="space-y-8">
+            
+            <!-- SECTION: 1. 儀器介紹 -->
+            <div class="glass-card rounded-2xl p-6 shadow-xl">
+                <h2 class="text-xl font-bold text-sky-400 mb-6 flex items-center gap-2 border-b border-slate-700/60 pb-3">
+                    <i class="fa-solid fa-microchip"></i> 1. 儀器介紹與探測模式比較
+                </h2>
+                
+                <div class="grid md:grid-cols-2 gap-6">
+                    <!-- 被動震源 Card -->
+                    <div class="bg-slate-800/60 rounded-xl p-5 border border-slate-700 hover:border-sky-500/50 transition">
+                        <div class="flex justify-between items-start mb-4">
+                            <h3 class="text-lg font-bold text-emerald-400 flex items-center gap-2">
+                                <i class="fa-solid fa-satellite-dish"></i> 密集地質網 (Passive Seismic)
+                            </h3>
+                            <span class="text-xs bg-emerald-500/20 text-emerald-300 px-2.5 py-1 rounded-full border border-emerald-500/30">被動震源</span>
+                        </div>
+                        <ul class="space-y-3 text-sm text-slate-300">
+                            <li class="flex items-start gap-2">
+                                <i class="fa-solid fa-check text-emerald-400 mt-1"></i>
+                                <span><strong>震源特性：</strong> 收集微震、背景雜訊或自然地震等被動震源。</span>
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <i class="fa-solid fa-check text-emerald-400 mt-1"></i>
+                                <span><strong>野外工作：</strong> 長時間自主擺放，廣域分佈密集陣列，不需人工人工敲擊或爆破。</span>
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <i class="fa-solid fa-check text-emerald-400 mt-1"></i>
+                                <span><strong>主要工具：</strong> 獨立式地震儀 (Nodes / Geophones)、GPS 定時單元。</span>
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <i class="fa-solid fa-check text-emerald-400 mt-1"></i>
+                                <span><strong>資料型態：</strong> 連續時間序列訊號，透過互相關 (Cross-correlation) 計算環境雜訊干涉。</span>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <!-- 主動震源 Card (本次實驗) -->
+                    <div class="bg-slate-800/60 rounded-xl p-5 border border-amber-500/40 hover:border-amber-500 transition relative overflow-hidden">
+                        <div class="absolute top-0 right-0 bg-amber-500 text-slate-900 text-xs font-bold px-3 py-1 rounded-bl-lg shadow">
+                            本次實驗採用
+                        </div>
+                        <div class="flex justify-between items-start mb-4">
+                            <h3 class="text-lg font-bold text-amber-400 flex items-center gap-2">
+                                <i class="fa-solid fa-hammer"></i> 多波道震測 (Active Seismic)
+                            </h3>
+                        </div>
+                        <ul class="space-y-3 text-sm text-slate-300">
+                            <li class="flex items-start gap-2">
+                                <i class="fa-solid fa-check text-amber-400 mt-1"></i>
+                                <span><strong>震源特性：</strong> 收集主動震源（人工鐵鎚擊震或炸藥）。</span>
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <i class="fa-solid fa-check text-amber-400 mt-1"></i>
+                                <span><strong>野外工作：</strong> 佈設等間距受波器 (Geophones) 測線，需重覆人工打鎚激發能量。</span>
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <i class="fa-solid fa-check text-amber-400 mt-1"></i>
+                                <span><strong>主要工具：</strong> 多波道地震儀 (Seismograph)、擊震鐵鎚/觸發板、連線纜線 (Trigger Cable)。</span>
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <i class="fa-solid fa-check text-amber-400 mt-1"></i>
+                                <span><strong>資料型態：</strong> 各接收器記錄到的波形初波到達時間（First Arrival Time / Shot Records）。</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SECTION: 2. 原理介紹 (四大重點) -->
+            <div class="glass-card rounded-2xl p-6 shadow-xl space-y-6">
+                <h2 class="text-xl font-bold text-sky-400 flex items-center gap-2 border-b border-slate-700/60 pb-3">
+                    <i class="fa-solid fa-book-open"></i> 2. 折射震測四大核心物理原理
+                </h2>
+
+                <div class="grid md:grid-cols-2 gap-6">
+                    <!-- 重點① -->
+                    <div class="bg-slate-900/60 p-5 rounded-xl border border-slate-700/80 hover:border-sky-500/40 transition">
+                        <div class="flex items-center gap-3 mb-2">
+                            <span class="w-8 h-8 rounded-full bg-sky-500/20 text-sky-400 flex items-center justify-center font-bold text-sm">①</span>
+                            <h3 class="font-bold text-slate-100 text-base">從速度的改變，推知結構的不同</h3>
+                        </div>
+                        <p class="text-sm text-slate-300 leading-relaxed pl-11">
+                            地震波在不同地層傳播時，速度隨介質改變。在走時曲線圖上，直線斜率代表速度的倒數（$\text{Slope} = 1/V$）。斜率產生折折角轉折，代表波切換至另一速度的地層。
+                        </p>
+                    </div>
+
+                    <!-- 重點② -->
+                    <div class="bg-slate-900/60 p-5 rounded-xl border border-slate-700/80 hover:border-amber-500/40 transition">
+                        <div class="flex items-center gap-3 mb-2">
+                            <span class="w-8 h-8 rounded-full bg-amber-500/20 text-amber-400 flex items-center justify-center font-bold text-sm">②</span>
+                            <h3 class="font-bold text-slate-100 text-base">臨界折射波出現的條件與限制</h3>
+                        </div>
+                        <div class="text-sm text-slate-300 leading-relaxed pl-11 space-y-2">
+                            <p>物理上必須滿足 <strong>$v_2 > v_1$（下層速度大於上層速度）</strong> 才能產生臨界折射波。</p>
+                            <div class="bg-slate-800 p-2.5 rounded-lg border border-slate-700 text-xs text-amber-200">
+                                臨界角條件：$\sin(\theta_c) = \frac{v_1}{v_2}$ <br>
+                                <span class="text-slate-400">限制：距離過短（$< x_{crit}$）接收不到折射波；距離太遠則能量衰減大。</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 重點③ -->
+                    <div class="bg-slate-900/60 p-5 rounded-xl border border-slate-700/80 hover:border-purple-500/40 transition">
+                        <div class="flex items-center gap-3 mb-2">
+                            <span class="w-8 h-8 rounded-full bg-purple-500/20 text-purple-400 flex items-center justify-center font-bold text-sm">③</span>
+                            <h3 class="font-bold text-slate-100 text-base">從速度的相交，計算地層深度</h3>
+                        </div>
+                        <div class="text-sm text-slate-300 leading-relaxed pl-11 space-y-2">
+                            <p>當直達波與臨界折射波到達時間相同時，對應的距離稱為<strong>交叉距離 ($x_{cross}$)</strong>。</p>
+                            <p class="text-xs text-slate-400">透過兩波到達公式相減，可推導出地層厚度/深度 $h$ 公式：</p>
+                            <div class="text-center font-mono text-xs bg-slate-800 p-2 rounded text-purple-300">
+                                $$h = \frac{x_{cross}}{2} \sqrt{\frac{v_2 - v_1}{v_2 + v_1}}$$
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 重點④ -->
+                    <div class="bg-slate-900/60 p-5 rounded-xl border border-slate-700/80 hover:border-emerald-500/40 transition">
+                        <div class="flex items-center gap-3 mb-2">
+                            <span class="w-8 h-8 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-bold text-sm">④</span>
+                            <h3 class="font-bold text-slate-100 text-base">惠更斯原理與連續探測</h3>
+                        </div>
+                        <p class="text-sm text-slate-300 leading-relaxed pl-11">
+                            波沿著滑行介面傳播時，介面上每個點皆為新的點波源（Huygens' Principle），持續向地表發射臨界折射波。利用連續佈設的受波器，可完整描繪出地下地層介面的起伏地形。
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 2: 互動走時曲線計算器 -->
+        <section id="sec-simulator" class="hidden space-y-8">
+            <div class="glass-card rounded-2xl p-6 shadow-xl">
+                <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 mb-6 border-b border-slate-700/60 pb-4">
+                    <div>
+                        <h2 class="text-xl font-bold text-sky-400 flex items-center gap-2">
+                            <i class="fa-solid fa-calculator"></i> 互動走時曲線模擬器 (Travel-Time Curve Simulator)
+                        </h2>
+                        <p class="text-xs text-slate-400 mt-1">調整地下地層參數，觀測直達波、反射波與折射波的到達時間關係與物理臨界值</p>
+                    </div>
+                    <div class="flex gap-2">
+                        <button onclick="resetParams()" class="text-xs bg-slate-700 hover:bg-slate-600 text-slate-200 px-3 py-1.5 rounded-lg border border-slate-600 transition">
+                            <i class="fa-solid fa-rotate-right mr-1"></i> 重設預設值
+                        </button>
+                    </div>
+                </div>
+
+                <div class="grid lg:grid-cols-12 gap-8">
+                    <!-- 左側控制面板 (Controls) -->
+                    <div class="lg:col-span-4 bg-slate-900/80 p-5 rounded-xl border border-slate-700 space-y-5">
+                        <h3 class="text-sm font-bold text-slate-200 uppercase tracking-wider flex items-center gap-2">
+                            <i class="fa-solid fa-sliders text-sky-400"></i> 模型參數設定
+                        </h3>
+
+                        <!-- v1 Control -->
+                        <div class="space-y-1.5">
+                            <div class="flex justify-between text-xs">
+                                <label for="input-v1" class="text-slate-300 font-medium">上層波速 $v_1$ (地表層)</label>
+                                <span id="val-v1" class="font-mono text-sky-400 font-bold">500 m/s</span>
+                            </div>
+                            <input id="input-v1" type="range" min="200" max="1500" step="50" value="500" 
+                                class="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-sky-400"
+                                oninput="updatePlot()">
+                        </div>
+
+                        <!-- v2 Control -->
+                        <div class="space-y-1.5">
+                            <div class="flex justify-between text-xs">
+                                <label for="input-v2" class="text-slate-300 font-medium">下層波速 $v_2$ (基岩層)</label>
+                                <span id="val-v2" class="font-mono text-amber-400 font-bold">1500 m/s</span>
+                            </div>
+                            <input id="input-v2" type="range" min="600" max="3500" step="50" value="1500" 
+                                class="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-amber-400"
+                                oninput="updatePlot()">
+                            <p id="v2-warning" class="text-[11px] text-red-400 hidden"><i class="fa-solid fa-triangle-exclamation"></i> $v_2$ 必須大於 $v_1$ 才能產生折射波！</p>
+                        </div>
+
+                        <!-- Depth h Control -->
+                        <div class="space-y-1.5">
+                            <div class="flex justify-between text-xs">
+                                <label for="input-h" class="text-slate-300 font-medium">地層介面深度 $h$</label>
+                                <span id="val-h" class="font-mono text-purple-400 font-bold">10 m</span>
+                            </div>
+                            <input id="input-h" type="range" min="2" max="30" step="1" value="10" 
+                                class="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-purple-400"
+                                oninput="updatePlot()">
+                        </div>
+
+                        <!-- Calculated Results Output Card -->
+                        <div class="pt-4 border-t border-slate-800 space-y-3">
+                            <h4 class="text-xs font-bold text-slate-400 uppercase">關鍵物理計算數據</h4>
+                            
+                            <div class="grid grid-cols-2 gap-2 text-xs">
+                                <div class="bg-slate-800 p-2.5 rounded-lg border border-slate-700">
+                                    <div class="text-slate-400">臨界角 $\theta_c$</div>
+                                    <div id="out-tc" class="text-base font-mono font-bold text-sky-400">19.47°</div>
+                                </div>
+                                <div class="bg-slate-800 p-2.5 rounded-lg border border-slate-700">
+                                    <div class="text-slate-400">截距時間 $t_0$</div>
+                                    <div id="out-t0" class="text-base font-mono font-bold text-emerald-400">0.038 s</div>
+                                </div>
+                                <div class="bg-slate-800 p-2.5 rounded-lg border border-slate-700">
+                                    <div class="text-slate-400">臨界距離 $x_{crit}$</div>
+                                    <div id="out-xcrit" class="text-base font-mono font-bold text-amber-400">7.07 m</div>
+                                </div>
+                                <div class="bg-slate-800 p-2.5 rounded-lg border border-slate-700">
+                                    <div class="text-slate-400">交叉距離 $x_{cross}$</div>
+                                    <div id="out-xcross" class="text-base font-mono font-bold text-purple-400">28.28 m</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 右側圖表 (Chart.js canvas) -->
+                    <div class="lg:col-span-8 bg-slate-900/60 p-4 rounded-xl border border-slate-700 flex flex-col justify-between">
+                        <div class="relative w-full h-80 sm:h-96">
+                            <canvas id="travelTimeChart"></canvas>
+                        </div>
+                        <div class="mt-3 flex flex-wrap gap-4 justify-center text-xs text-slate-300 border-t border-slate-800 pt-3">
+                            <span class="flex items-center gap-1.5"><span class="w-3 h-0.5 bg-sky-400 inline-block"></span> 直達波 (Direct)</span>
+                            <span class="flex items-center gap-1.5"><span class="w-3 h-0.5 bg-emerald-400 inline-block"></span> 反射波 (Reflected)</span>
+                            <span class="flex items-center gap-1.5"><span class="w-3 h-0.5 bg-amber-400 inline-block"></span> 折射波 (Refracted)</span>
+                            <span class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-purple-400 inline-block"></span> 交叉點 ($x_{cross}$)</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 3: 波型路徑傳播動態畫布 -->
+        <section id="sec-wavepaths" class="hidden space-y-8">
+            <div class="glass-card rounded-2xl p-6 shadow-xl">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6 border-b border-slate-700/60 pb-4">
+                    <div>
+                        <h2 class="text-xl font-bold text-sky-400 flex items-center gap-2">
+                            <i class="fa-solid fa-route"></i> 波形傳播路徑動態視覺化
+                        </h2>
+                        <p class="text-xs text-slate-400 mt-1">模擬震源敲擊後，地震波穿過地下兩層介質的到達與傳播動畫（路徑 A ➔ B ➔ C ➔ D）</p>
+                    </div>
+                    <!-- 波形切換 Radio Buttons -->
+                    <div class="flex bg-slate-800 p-1 rounded-xl border border-slate-700">
+                        <button onclick="setWaveType('all')" id="wb-all" class="px-3 py-1 text-xs rounded-lg transition bg-sky-600 text-white font-medium">全顯示</button>
+                        <button onclick="setWaveType('direct')" id="wb-direct" class="px-3 py-1 text-xs rounded-lg transition text-slate-300 hover:text-white">直達波</button>
+                        <button onclick="setWaveType('reflect')" id="wb-reflect" class="px-3 py-1 text-xs rounded-lg transition text-slate-300 hover:text-white">反射波</button>
+                        <button onclick="setWaveType('refract')" id="wb-refract" class="px-3 py-1 text-xs rounded-lg transition text-slate-300 hover:text-white">折射波 (A-B-C-D)</button>
+                    </div>
+                </div>
+
+                <!-- Canvas Animation Area -->
+                <div class="bg-slate-900 rounded-xl overflow-hidden border border-slate-700 relative">
+                    <canvas id="waveCanvas" class="w-full h-80 block cursor-pointer"></canvas>
+                    <div class="absolute bottom-3 left-3 bg-slate-900/80 px-3 py-2 rounded-lg border border-slate-700 text-xs space-y-1">
+                        <div class="text-sky-300 font-bold"><i class="fa-solid fa-info-circle mr-1"></i> 折射波傳播步驟 A ➔ B ➔ C ➔ D：</div>
+                        <div class="text-slate-300">A➔B: 臨角入射地下介面 | B➔C: 介面上沿 $V_2$ 高速滑行 | C➔D: 連續向地表射出折射波</div>
+                    </div>
+                    <div class="absolute top-3 right-3 flex gap-2">
+                        <button onclick="startWaveAnim()" class="bg-amber-500 hover:bg-amber-600 text-slate-900 text-xs font-bold px-3 py-1.5 rounded-lg shadow transition">
+                            <i class="fa-solid fa-play mr-1"></i> 播放擊震動畫
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 4: 實驗心得與 AI 協作歷程 -->
+        <section id="sec-reflection" class="hidden space-y-8">
+            <div class="grid md:grid-cols-2 gap-8">
+                
+                <!-- 心得感想 -->
+                <div class="glass-card rounded-2xl p-6 shadow-xl space-y-4">
+                    <h2 class="text-xl font-bold text-amber-400 flex items-center gap-2 border-b border-slate-700/60 pb-3">
+                        <i class="fa-solid fa-comment-dots"></i> 野外實驗心得感想
+                    </h2>
+                    <div class="text-slate-300 text-sm leading-relaxed space-y-3">
+                        <p class="bg-slate-800/60 p-3.5 rounded-xl border border-slate-700/80">
+                            <i class="fa-solid fa-quote-left text-amber-400/40 text-2xl float-left mr-2"></i>
+                            這次的地震折射法實驗是一次非常難得且有趣的體驗。實際拿鐵鎚敲擊擊震真的非常耗費體力，手臂敲到又酸又痛，但也讓我切身體會到地物探測前輩們在野外風吹日曬、進行實地工程時的辛勞與不易。
+                        </p>
+                        <p class="bg-slate-800/60 p-3.5 rounded-xl border border-slate-700/80">
+                            在資料處理階段，要從複雜的訊號中確定真實波速、排除環境雜訊的干擾，以及人工判讀初波到達時間 (First Arrival)，過程真的非常吃力且具挑戰性。
+                        </p>
+                        <p class="bg-slate-800/60 p-3.5 rounded-xl border border-slate-700/80">
+                            然而，當最終能將這些看似冰冷死板的波形數據，一步步推導並繪製出真實的地下介面起伏與深度時，那種化抽象為具體的成就感真的非常有意思，也讓我對地震探測的物理原理有了更深刻的認識。
+                        </p>
+                    </div>
+                </div>
+
+                <!-- AI 協作與 Colab 分析歷程 -->
+                <div class="glass-card rounded-2xl p-6 shadow-xl space-y-4">
+                    <h2 class="text-xl font-bold text-sky-400 flex items-center gap-2 border-b border-slate-700/60 pb-3">
+                        <i class="fa-solid fa-code"></i> AI 協作與 Colab 分析流程
+                    </h2>
+                    <div class="space-y-3 text-sm">
+                        <div class="flex items-start gap-3 bg-slate-800/60 p-3 rounded-xl border border-slate-700">
+                            <div class="p-2 bg-sky-500/20 text-sky-400 rounded-lg shrink-0">
+                                <i class="fa-brands fa-python"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-slate-200 text-xs">Google Colab Notebook 資料處理</h4>
+                                <p class="text-xs text-slate-400 mt-1">利用 Python (`Obspy`, `NumPy`, `Matplotlib`) 讀取 SEGY 震測波形資料並繪製 Shot Gather 波形圖。</p>
+                            </div>
+                        </div>
+
+                        <div class="flex items-start gap-3 bg-slate-800/60 p-3 rounded-xl border border-slate-700">
+                            <div class="p-2 bg-purple-500/20 text-purple-400 rounded-lg shrink-0">
+                                <i class="fa-solid fa-robot"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-slate-200 text-xs">AI 輔助程式碼開發與諮詢</h4>
+                                <p class="text-xs text-slate-400 mt-1">將老師簡報圖片與數據傳送給 AI，請 AI 協助生成走時曲線回歸分析程式碼與動態互動視覺化網頁。</p>
+                            </div>
+                        </div>
+
+                        <div class="flex items-start gap-3 bg-slate-800/60 p-3 rounded-xl border border-slate-700">
+                            <div class="p-2 bg-emerald-500/20 text-emerald-400 rounded-lg shrink-0">
+                                <i class="fa-solid fa-chart-area"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-slate-200 text-xs">成果呈現與驗證</h4>
+                                <p class="text-xs text-slate-400 mt-1">比對直達波與折射波擬合線，求得地下介面深度 $h$ 並建立直觀的教學展示 UI。</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="border-t border-slate-800 glass-card py-4 text-center text-xs text-slate-500">
+        <p>地球科學系 地生二 林恩羽 (u11410024) - 地物作業 折射震測實驗心得報告</p>
+    </footer>
+
+    <!-- JavaScript Logic -->
+    <script>
+        // Tab switching functionality
+        function switchTab(tabId) {
+            ['overview', 'simulator', 'wavepaths', 'reflection'].forEach(id => {
+                document.getElementById('sec-' + id).classList.add('hidden');
+                document.getElementById('tab-' + id).classList.remove('active');
+            });
+            document.getElementById('sec-' + tabId).classList.remove('hidden');
+            document.getElementById('tab-' + tabId).classList.add('active');
+
+            if (tabId === 'simulator') {
+                updatePlot();
+            } else if (tabId === 'wavepaths') {
+                drawWaveCanvas();
+            }
+        }
+
+        // ==========================================
+        // SIMULATOR LOGIC (Chart.js)
+        // ==========================================
+        let travelChart = null;
+
+        function initChart() {
+            const ctx = document.getElementById('travelTimeChart').getContext('2d');
+            travelChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    datasets: [
+                        { label: '直達波 (Direct Wave)', borderColor: '#38bdf8', borderWidth: 2, pointRadius: 0, fill: false, data: [] },
+                        { label: '反射波 (Reflected Wave)', borderColor: '#34d399', borderWidth: 2, borderDash: [4, 4], pointRadius: 0, fill: false, data: [] },
+                        { label: '折射波 (Refracted Wave)', borderColor: '#fb923c', borderWidth: 2.5, pointRadius: 0, fill: false, data: [] },
+                        { label: '交叉點 (Cross Distance)', backgroundColor: '#c084fc', borderColor: '#ffffff', pointRadius: 6, pointHoverRadius: 8, showLine: false, data: [] }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: {
+                            type: 'linear',
+                            position: 'bottom',
+                            title: { display: true, text: '距離 Offset x (m)', color: '#94a3b8' },
+                            ticks: { color: '#64748b' },
+                            grid: { color: 'rgba(255, 255, 255, 0.05)' }
+                        },
+                        y: {
+                            title: { display: true, text: '到達時間 Arrival Time t (s)', color: '#94a3b8' },
+                            ticks: { color: '#64748b' },
+                            grid: { color: 'rgba(255, 255, 255, 0.05)' },
+                            beginAtZero: true
+                        }
+                    },
+                    plugins: {
+                        legend: { display: false }
+                    }
+                }
+            });
+        }
+
+        function updatePlot() {
+            const v1 = parseFloat(document.getElementById('input-v1').value);
+            const v2 = parseFloat(document.getElementById('input-v2').value);
+            const h = parseFloat(document.getElementById('input-h').value);
+
+            // Update UI Labels
+            document.getElementById('val-v1').innerText = v1 + ' m/s';
+            document.getElementById('val-v2').innerText = v2 + ' m/s';
+            document.getElementById('val-h').innerText = h + ' m';
+
+            const warningEl = document.getElementById('v2-warning');
+            if (v2 <= v1) {
+                warningEl.classList.remove('hidden');
+                return;
+            } else {
+                warningEl.classList.add('hidden');
+            }
+
+            // Calculations
+            const sinThetaC = v1 / v2;
+            const thetaCDeg = (Math.asin(sinThetaC) * 180 / Math.PI).toFixed(2);
+            const xCrit = 2 * h * Math.tan(Math.asin(sinThetaC));
+            const xCross = 2 * h * Math.sqrt((v2 + v1) / (v2 - v1));
+            const t0 = (2 * h * Math.sqrt(v2 * v2 - v1 * v1)) / (v1 * v2);
+
+            // Update output display
+            document.getElementById('out-tc').innerText = thetaCDeg + '°';
+            document.getElementById('out-t0').innerText = t0.toFixed(4) + ' s';
+            document.getElementById('out-xcrit').innerText = xCrit.toFixed(2) + ' m';
+            document.getElementById('out-xcross').innerText = xCross.toFixed(2) + ' m';
+
+            // Generate Curve Points
+            const maxX = Math.max(50, Math.ceil(xCross * 1.5));
+            const directData = [];
+            const reflectData = [];
+            const refractData = [];
+
+            for (let x = 0; x <= maxX; x += 0.5) {
+                // Direct Wave: t = x / v1
+                directData.push({ x: x, y: x / v1 });
+
+                // Reflected Wave: t = sqrt(x^2 + 4h^2) / v1
+                reflectData.push({ x: x, y: Math.sqrt(x * x + 4 * h * h) / v1 });
+
+                // Refracted Wave: t = x / v2 + t0 (Only valid for x >= xCrit)
+                if (x >= xCrit) {
+                    refractData.push({ x: x, y: x / v2 + t0 });
+                }
+            }
+
+            const tCross = xCross / v1;
+
+            if (travelChart) {
+                travelChart.data.datasets[0].data = directData;
+                travelChart.data.datasets[1].data = reflectData;
+                travelChart.data.datasets[2].data = refractData;
+                travelChart.data.datasets[3].data = [{ x: xCross, y: tCross }];
+                travelChart.options.scales.x.max = maxX;
+                travelChart.update();
+            }
+        }
+
+        function resetParams() {
+            document.getElementById('input-v1').value = 500;
+            document.getElementById('input-v2').value = 1500;
+            document.getElementById('input-h').value = 10;
+            updatePlot();
+        }
+
+        // ==========================================
+        // CANVAS ANIMATION LOGIC
+        // ==========================================
+        let waveType = 'all';
+        let animProgress = 0;
+        let animId = null;
+
+        function setWaveType(type) {
+            waveType = type;
+            ['all', 'direct', 'reflect', 'refract'].forEach(t => {
+                const btn = document.getElementById('wb-' + t);
+                if (t === type) {
+                    btn.className = 'px-3 py-1 text-xs rounded-lg transition bg-sky-600 text-white font-medium';
+                } else {
+                    btn.className = 'px-3 py-1 text-xs rounded-lg transition text-slate-300 hover:text-white';
+                }
+            });
+            drawWaveCanvas();
+        }
+
+        function drawWaveCanvas() {
+            const canvas = document.getElementById('waveCanvas');
+            const ctx = canvas.getContext('2d');
+            
+            // Handle DPI scaling
+            canvas.width = canvas.clientWidth;
+            canvas.height = canvas.clientHeight;
+
+            const w = canvas.width;
+            const h = canvas.height;
+
+            ctx.clearRect(0, 0, w, h);
+
+            // Layer Heights
+            const surfaceY = 60;
+            const interfaceY = 200;
+
+            // Draw Layers Background
+            // Layer 1
+            ctx.fillStyle = '#1e293b';
+            ctx.fillRect(0, surfaceY, w, interfaceY - surfaceY);
+            ctx.fillStyle = '#94a3b8';
+            ctx.font = '12px sans-serif';
+            ctx.fillText('上層介質 Layer 1 (V1 = 500 m/s)', 15, surfaceY + 25);
+
+            // Layer 2
+            ctx.fillStyle = '#0f172a';
+            ctx.fillRect(0, interfaceY, w, h - interfaceY);
+            ctx.fillStyle = '#cbd5e1';
+            ctx.fillText('下層介質 Layer 2 (V2 = 1500 m/s)', 15, interfaceY + 30);
+
+            // Draw Boundary Line
+            ctx.strokeStyle = '#64748b';
+            ctx.lineWidth = 2;
+            ctx.setLineDash([6, 4]);
+            ctx.beginPath();
+            ctx.moveTo(0, interfaceY);
+            ctx.lineTo(w, interfaceY);
+            ctx.stroke();
+            ctx.setLineDash([]);
+
+            // Points
+            const sourceX = 60;
+            const rx1X = sourceX + 100;
+            const rx2X = sourceX + 220;
+            const rx3X = sourceX + 340;
+
+            // Draw Source (Hammer)
+            ctx.fillStyle = '#ef4444';
+            ctx.beginPath();
+            ctx.arc(sourceX, surfaceY, 8, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.fillStyle = '#ffffff';
+            ctx.font = 'bold 10px sans-serif';
+            ctx.fillText('震源', sourceX - 10, surfaceY - 12);
+
+            // Draw Geophones
+            [rx1X, rx2X, rx3X].forEach((rx, idx) => {
+                ctx.fillStyle = '#f59e0b';
+                ctx.beginPath();
+                ctx.moveTo(rx, surfaceY - 10);
+                ctx.lineTo(rx - 6, surfaceY);
+                ctx.lineTo(rx + 6, surfaceY);
+                ctx.closePath();
+                ctx.fill();
+                ctx.fillStyle = '#94a3b8';
+                ctx.fillText(`Rec ${idx + 1}`, rx - 12, surfaceY - 14);
+            });
+
+            // Critical Angle Path Calculation
+            const criticalAngleRad = Math.asin(500 / 1500);
+            const dxCritical = (interfaceY - surfaceY) * Math.tan(criticalAngleRad);
+            const ptB = { x: sourceX + dxCritical, y: interfaceY };
+            const ptC = { x: rx3X - dxCritical, y: interfaceY };
+
+            // Draw Ray Paths based on WaveType
+            ctx.lineWidth = 2.5;
+
+            // 1. Direct Wave
+            if (waveType === 'all' || waveType === 'direct') {
+                ctx.strokeStyle = '#38bdf8';
+                ctx.beginPath();
+                ctx.moveTo(sourceX, surfaceY);
+                ctx.lineTo(rx3X, surfaceY);
+                ctx.stroke();
+            }
+
+            // 2. Reflected Wave
+            if (waveType === 'all' || waveType === 'reflect') {
+                const reflectPt = { x: (sourceX + rx2X) / 2, y: interfaceY };
+                ctx.strokeStyle = '#34d399';
+                ctx.beginPath();
+                ctx.moveTo(sourceX, surfaceY);
+                ctx.lineTo(reflectPt.x, reflectPt.y);
+                ctx.lineTo(rx2X, surfaceY);
+                ctx.stroke();
+            }
+
+            // 3. Refracted Wave (A -> B -> C -> D)
+            if (waveType === 'all' || waveType === 'refract') {
+                ctx.strokeStyle = '#fb923c';
+                ctx.beginPath();
+                ctx.moveTo(sourceX, surfaceY); // A
+                ctx.lineTo(ptB.x, ptB.y);       // B
+                ctx.lineTo(ptC.x, ptC.y);       // C
+                ctx.lineTo(rx3X, surfaceY);     // D
+                ctx.stroke();
+
+                // Annotations A B C D
+                ctx.fillStyle = '#fb923c';
+                ctx.font = 'bold 12px sans-serif';
+                ctx.fillText('A', sourceX - 15, surfaceY + 5);
+                ctx.fillText('B', ptB.x - 5, ptB.y + 18);
+                ctx.fillText('C', ptC.x - 5, ptC.y + 18);
+                ctx.fillText('D', rx3X + 10, surfaceY + 5);
+            }
+        }
+
+        function startWaveAnim() {
+            if (animId) cancelAnimationFrame(animId);
+            let p = 0;
+
+            function animate() {
+                p += 0.02;
+                if (p > 1) p = 0;
+
+                drawWaveCanvas();
+
+                // Pulse Effect
+                const canvas = document.getElementById('waveCanvas');
+                const ctx = canvas.getContext('2d');
+                const sourceX = 60;
+                const surfaceY = 60;
+
+                ctx.strokeStyle = `rgba(245, 158, 11, ${1 - p})`;
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.arc(sourceX, surfaceY, p * 120, 0, Math.PI * 2);
+                ctx.stroke();
+
+                animId = requestAnimationFrame(animate);
+            }
+
+            animate();
+            setTimeout(() => {
+                cancelAnimationFrame(animId);
+                drawWaveCanvas();
+            }, 3000);
+        }
+
+        // Initialize on Load
+        window.onload = function () {
+            initChart();
+            updatePlot();
+            drawWaveCanvas();
+        };
+
+        window.onresize = function() {
+            if (document.getElementById('sec-wavepaths').classList.contains('hidden') === false) {
+                drawWaveCanvas();
+            }
+        };
+    </script>
+</body>
+</html>
